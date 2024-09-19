@@ -1,7 +1,7 @@
 data "aws_lb" "tech" {
     tags = {
         name = "kubernetes.io/service-name"
-        value = ["default/svc-loja"]
+        value = "default/svc-loja"
     }
 }
 

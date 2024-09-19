@@ -24,26 +24,26 @@ provider "aws" {
   region = "us-east-1"
 }
 
-data "aws_lb" "tech" {
-    tags = {
-        name = "kubernetes.io/service-name"
-        value = "default/svc-loja"
-    }
-}
+# data "aws_lb" "tech" {
+#     tags = {
+#         name = "kubernetes.io/service-name"
+#         value = "default/svc-loja"
+#     }
+# }
 
-output "load_balancer_arn" {
-    value = data.aws_lb.tech.arn
-}
+# output "load_balancer_arn" {
+#     value = data.aws_lb.tech.arn
+# }
 
-output "load_balancer_dns" {
-    value = data.aws_lb.tech.name
-}
+# output "load_balancer_dns" {
+#     value = data.aws_lb.tech.name
+# }
 
 
 resource "aws_api_gateway_vpc_link" "main" {
   name        = "tech_vpclink"
   description = "Foobar Gateway VPC Link. Managed by Terraform."
-  target_arns = [data.aws_lb.tech.arn]
+  target_arns = ["arn:aws:elasticloadbalancing:us-east-1:019248244455:loadbalancer/net/a480f7cbcbf6d4e75b24e396b405d92d/758428d38787cf25"]
 }
 
 resource "aws_api_gateway_rest_api" "main" {
@@ -80,7 +80,7 @@ resource "aws_api_gateway_integration" "proxy" {
 
   integration_http_method = "ANY"
   type                    = "HTTP_PROXY"
-  uri                     = "http://${data.aws_lb.tech.name}/{proxy}"
+  uri                     = "http://a480f7cbcbf6d4e75b24e396b405d92d/{proxy}"
   passthrough_behavior    = "WHEN_NO_MATCH"
   content_handling        = "CONVERT_TO_TEXT"
 

@@ -40,18 +40,19 @@ output "load_balancer_dns" {
 }
 
 
-resource “aws_api_gateway_vpc_link” “main” {
- name = “tech_vpclink”
- description = “Foobar Gateway VPC Link. Managed by Terraform.”
- target_arns = load_balancer_arn
+resource "aws_api_gateway_vpc_link" "main" {
+  name        = "tech_vpclink"
+  description = "Foobar Gateway VPC Link. Managed by Terraform."
+  target_arns = [data.aws_lb.tech.arn]
 }
 
-resource “aws_api_gateway_rest_api” “main” {
- name = "tech_gateway"
- description = “Foobar Gateway used for EKS. Managed by Terraform.”
- endpoint_configuration {
-   types = ["REGIONAL"]
- }
+resource "aws_api_gateway_rest_api" "main" {
+  name           = "tech_gateway"
+  description    = "Foobar Gateway VPC Link. Managed by Terraform."
+
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
 }
 
 resource "aws_api_gateway_resource" "proxy" {
@@ -79,7 +80,7 @@ resource "aws_api_gateway_integration" "proxy" {
 
   integration_http_method = "ANY"
   type                    = "HTTP_PROXY"
-  uri                     = "http://${load_balancer_dns}/{proxy}"
+  uri                     = "http://${data.aws_lb.tech.name}/{proxy}"
   passthrough_behavior    = "WHEN_NO_MATCH"
   content_handling        = "CONVERT_TO_TEXT"
 

@@ -44,7 +44,7 @@ resource "aws_api_gateway_integration" "proxy" {
 
   integration_http_method = "ANY"
   type                    = "HTTP_PROXY"
-  uri                     = "http://${data.aws_lbs.tech_lbs.dns}/{proxy}"
+  uri                     = "http://${data.aws_lbs.tech_lbs.dns_name}/{proxy}"
   passthrough_behavior    = "WHEN_NO_MATCH"
   content_handling        = "CONVERT_TO_TEXT"
 

@@ -1,5 +1,7 @@
 data "aws_lb" "tech" {
-    tags = "default/svc-loja"
+    tags = {
+        kubernetes.io/service-name = "default/svc-loja"
+    }
 }
 
 output "load_balancer_arn" {

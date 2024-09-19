@@ -10,13 +10,13 @@ terraform {
     }
   }
   required_version = ">= 1.1.0"
-    cloud {
-    organization = "teste-carla"
+  #   cloud {
+  #   organization = "teste-carla"
 
-    workspaces {
-      name = "novo-workspace"
-    }
-  }
+  #   workspaces {
+  #     name = "novo-workspace"
+  #   }
+  # }
 }
 
 provider "aws" {

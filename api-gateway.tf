@@ -1,49 +1,13 @@
-
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "4.52.0"
+data "aws_lbs" "tech_lbs" {
+    tags = {
+        "kubernetes.io/service-name" = "default/svc-loja"
     }
-    random = {
-      source  = "hashicorp/random"
-      version = "3.4.3"
-    }
-  }
-  required_version = ">= 1.1.0"
-    cloud {
-    organization = "teste-carla"
-
-    workspaces {
-      name = "novo-workspace"
-    }
-  }
 }
-
-provider "aws" {
-  region = "us-east-1"
-}
-
-# data "aws_lb" "tech" {
-#     tags = {
-#         name = "kubernetes.io/service-name"
-#         value = "default/svc-loja"
-#     }
-# }
-
-# output "load_balancer_arn" {
-#     value = data.aws_lb.tech.arn
-# }
-
-# output "load_balancer_dns" {
-#     value = data.aws_lb.tech.name
-# }
-
 
 resource "aws_api_gateway_vpc_link" "main" {
   name        = "tech_vpclink"
   description = "Foobar Gateway VPC Link. Managed by Terraform."
-  target_arns = ["arn:aws:elasticloadbalancing:us-east-1:019248244455:loadbalancer/net/a480f7cbcbf6d4e75b24e396b405d92d/758428d38787cf25"]
+  target_arns = data.aws_lbs.tech_lbs.arns
 }
 
 resource "aws_api_gateway_rest_api" "main" {
@@ -80,7 +44,7 @@ resource "aws_api_gateway_integration" "proxy" {
 
   integration_http_method = "ANY"
   type                    = "HTTP_PROXY"
-  uri                     = "http://a480f7cbcbf6d4e75b24e396b405d92d/{proxy}"
+  uri                     = "http://a2e8081d793fc4d8abaeea9dc4112fb7-aacd053f04726e2f.elb.us-east-1.amazonaws.com/{proxy}"
   passthrough_behavior    = "WHEN_NO_MATCH"
   content_handling        = "CONVERT_TO_TEXT"
 

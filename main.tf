@@ -10,7 +10,7 @@ output "load_balancer_arn" {
 }
 
 output "load_balancer_dns" {
-    value = data.aws_lb.tech.dns
+    value = data.aws_lb.tech.name
 }
 
 

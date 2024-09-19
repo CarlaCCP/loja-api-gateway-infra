@@ -1,8 +1,9 @@
 data "aws_lb" "tech" {
-   filter {
-    name = "tag:kubernetes.io/service-name"
-    values = ["default/svc-loja"]
-   }
+#    filter {
+#     name = "tag:kubernetes.io/service-name"
+#     values = ["default/svc-loja"]
+#    }
+    most_recent = true
 }
 
 output "load_balancer_arn" {

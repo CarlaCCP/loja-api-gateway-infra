@@ -1,5 +1,5 @@
 data "aws_lb" "tech" {
-    tags = "ver tag"
+    tags = "default/svc-loja"
 }
 
 output "load_balancer_arn" {

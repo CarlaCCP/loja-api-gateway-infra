@@ -5,7 +5,7 @@ data "aws_lbs" "tech_lbs" {
 }
 
 resource "aws_api_gateway_vpc_link" "main" {
-  name        = "tech_vpclink"
+  name        = "tech_vpclink_teste"
   description = "Foobar Gateway VPC Link. Managed by Terraform."
   target_arns = data.aws_lbs.tech_lbs.arns
 }

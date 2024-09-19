@@ -1,3 +1,18 @@
+data "aws_lb" "tech" {
+    tags = {
+        name = "kubernetes.io/service-name"
+        value = ["default/svc-loja"]
+    }
+}
+
+output "load_balancer_arn" {
+    value = data.aws_lb.tech.arn
+}
+
+output "load_balancer_dns" {
+    value = data.aws_lb.tech.dns
+}
+
 
 # resource “aws_api_gateway_vpc_link” “main” {
 #  name = “tech_vpclink”

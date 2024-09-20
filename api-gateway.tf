@@ -7,117 +7,119 @@ data "aws_lb" "tech_lb" {
 output lb_output_arn {
   value = data.aws_lb.tech_lb.arn
 }
+
 output lb_output_dns_name {
   value = data.aws_lb.tech_lb.dns_name
 }
-# resource "aws_api_gateway_vpc_link" "main" {
-#   name        = "tech_vpclink_teste"
-#   description = "Foobar Gateway VPC Link. Managed by Terraform."
-#   target_arns = data.aws_lbs.tech_lbs.arns
-# }
 
-# resource "aws_api_gateway_rest_api" "main" {
-#   name           = "tech_gateway"
-#   description    = "Foobar Gateway VPC Link. Managed by Terraform."
+resource "aws_api_gateway_vpc_link" "main" {
+  name        = "tech_vpclink_teste"
+  description = "Foobar Gateway VPC Link. Managed by Terraform."
+  target_arns = data.aws_lb.tech_lb.arn
+}
 
-#   endpoint_configuration {
-#     types = ["REGIONAL"]
-#   }
-# }
+resource "aws_api_gateway_rest_api" "main" {
+  name           = "tech_gateway"
+  description    = "Foobar Gateway VPC Link. Managed by Terraform."
 
-# resource "aws_api_gateway_method" "root" {
-#   rest_api_id   = aws_api_gateway_rest_api.main.id
-#   resource_id   = aws_api_gateway_rest_api.main.root_resource_id
-#   http_method   = "ANY"
-#   authorization = "NONE"
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
+}
 
-#   request_parameters = {
-#     "method.request.path.proxy"           = true
-#     "method.request.header.Authorization" = true
-#   }
-# }
+resource "aws_api_gateway_method" "root" {
+  rest_api_id   = aws_api_gateway_rest_api.main.id
+  resource_id   = aws_api_gateway_rest_api.main.root_resource_id
+  http_method   = "ANY"
+  authorization = "NONE"
 
-# resource "aws_api_gateway_integration" "root" {
-#   rest_api_id = aws_api_gateway_rest_api.main.id
-#   resource_id = aws_api_gateway_rest_api.main.root_resource_id
-#   http_method = "ANY"
+  request_parameters = {
+    "method.request.path.proxy"           = true
+    "method.request.header.Authorization" = true
+  }
+}
 
-#   integration_http_method = "ANY"
-#   type                    = "HTTP_PROXY"
-#   uri                     = "http://a2e8081d793fc4d8abaeea9dc4112fb7-aacd053f04726e2f.elb.us-east-1.amazonaws.com/"
-#   passthrough_behavior    = "WHEN_NO_MATCH"
-#   content_handling        = "CONVERT_TO_TEXT"
+resource "aws_api_gateway_integration" "root" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_rest_api.main.root_resource_id
+  http_method = "ANY"
 
-#   request_parameters = {
-#     "integration.request.path.proxy"           = "method.request.path.proxy"
-#     "integration.request.header.Accept"        = "'application/json'"
-#     "integration.request.header.Authorization" = "method.request.header.Authorization"
-#   }
+  integration_http_method = "ANY"
+  type                    = "HTTP_PROXY"
+  uri                     = "http://${data.aws_lb.tech_lb.dns_name}/"
+  passthrough_behavior    = "WHEN_NO_MATCH"
+  content_handling        = "CONVERT_TO_TEXT"
 
-#   connection_type = "VPC_LINK"
-#   connection_id   = aws_api_gateway_vpc_link.main.id
-# }
+  request_parameters = {
+    "integration.request.path.proxy"           = "method.request.path.proxy"
+    "integration.request.header.Accept"        = "'application/json'"
+    "integration.request.header.Authorization" = "method.request.header.Authorization"
+  }
 
-# resource "aws_api_gateway_resource" "proxy" {
-#   rest_api_id = aws_api_gateway_rest_api.main.id
-#   parent_id   = aws_api_gateway_rest_api.main.root_resource_id
-#   path_part   = "{proxy+}"
-# }
+  connection_type = "VPC_LINK"
+  connection_id   = aws_api_gateway_vpc_link.main.id
+}
 
-# resource "aws_api_gateway_method" "proxy" {
-#   rest_api_id   = aws_api_gateway_rest_api.main.id
-#   resource_id   = aws_api_gateway_resource.proxy.id
-#   http_method   = "ANY"
-#   authorization = "NONE"
+resource "aws_api_gateway_resource" "proxy" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  parent_id   = aws_api_gateway_rest_api.main.root_resource_id
+  path_part   = "{proxy+}"
+}
 
-#   request_parameters = {
-#     "method.request.path.proxy"           = true
-#     "method.request.header.Authorization" = true
-#   }
-# }
+resource "aws_api_gateway_method" "proxy" {
+  rest_api_id   = aws_api_gateway_rest_api.main.id
+  resource_id   = aws_api_gateway_resource.proxy.id
+  http_method   = "ANY"
+  authorization = "NONE"
 
-# resource "aws_api_gateway_integration" "proxy" {
-#   rest_api_id = aws_api_gateway_rest_api.main.id
-#   resource_id = aws_api_gateway_resource.proxy.id
-#   http_method = "ANY"
+  request_parameters = {
+    "method.request.path.proxy"           = true
+    "method.request.header.Authorization" = true
+  }
+}
 
-#   integration_http_method = "ANY"
-#   type                    = "HTTP_PROXY"
-#   uri                     = "http://a2e8081d793fc4d8abaeea9dc4112fb7-aacd053f04726e2f.elb.us-east-1.amazonaws.com/{proxy}"
-#   passthrough_behavior    = "WHEN_NO_MATCH"
-#   content_handling        = "CONVERT_TO_TEXT"
+resource "aws_api_gateway_integration" "proxy" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_resource.proxy.id
+  http_method = "ANY"
 
-#   request_parameters = {
-#     "integration.request.path.proxy"           = "method.request.path.proxy"
-#     "integration.request.header.Accept"        = "'application/json'"
-#     "integration.request.header.Authorization" = "method.request.header.Authorization"
-#   }
+  integration_http_method = "ANY"
+  type                    = "HTTP_PROXY"
+  uri                     = "http://${data.aws_lb.tech_lb.dns_name}/{proxy}"
+  passthrough_behavior    = "WHEN_NO_MATCH"
+  content_handling        = "CONVERT_TO_TEXT"
 
-#   connection_type = "VPC_LINK"
-#   connection_id   = aws_api_gateway_vpc_link.main.id
-# }
+  request_parameters = {
+    "integration.request.path.proxy"           = "method.request.path.proxy"
+    "integration.request.header.Accept"        = "'application/json'"
+    "integration.request.header.Authorization" = "method.request.header.Authorization"
+  }
 
-# resource "aws_api_gateway_stage" "stage_dev" {
-#   deployment_id = aws_api_gateway_deployment.deployment.id
-#   rest_api_id   = aws_api_gateway_rest_api.main.id
-#   stage_name    = "dev"
-# }
+  connection_type = "VPC_LINK"
+  connection_id   = aws_api_gateway_vpc_link.main.id
+}
 
-# resource "aws_api_gateway_deployment" "deployment" {
-#   rest_api_id = aws_api_gateway_rest_api.main.id
+resource "aws_api_gateway_stage" "stage_dev" {
+  deployment_id = aws_api_gateway_deployment.deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.main.id
+  stage_name    = "dev"
+}
 
-#   triggers = {
-#     redeployment = sha1(jsonencode(aws_api_gateway_rest_api.main.body))
-#     auto_deploy  = true
-#   }
+resource "aws_api_gateway_deployment" "deployment" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
 
-#   lifecycle {
-#     create_before_destroy = true
-#   }
+  triggers = {
+    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.main.body))
+    auto_deploy  = true
+  }
 
-#   depends_on = [aws_api_gateway_integration.proxy, aws_api_gateway_integration.root]
-# }
+  lifecycle {
+    create_before_destroy = true
+  }
 
-# output "base_url" {
-#   value = "${aws_api_gateway_stage.stage_dev.invoke_url}/"
-# }
+  depends_on = [aws_api_gateway_integration.proxy, aws_api_gateway_integration.root]
+}
+
+output "base_url" {
+  value = "${aws_api_gateway_stage.stage_dev.invoke_url}/"
+}

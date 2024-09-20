@@ -22,12 +22,12 @@ data "aws_lb" "tech_lb" {
 
 output lbs_output {
   # value = data.aws_subnets.tech_subnetes.ids
-  value = data.tech_elb
+  value = data.aws_lbs.tech_elb
 }
 
 output lb_output {
   # value = data.aws_subnets.tech_subnetes.ids
-  value = data.tech_lb
+  value = data.aws_lb.tech_lb
 }
 
 resource "aws_api_gateway_vpc_link" "main" {

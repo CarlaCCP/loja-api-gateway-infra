@@ -4,20 +4,30 @@ data "aws_lbs" "tech_lbs" {
     }
 }
 
-data "aws_elb" "tech_elb" {
-      tags = {
+data "aws_lb" "tech_lb" {
+    tags = {
         "kubernetes.io/service-name" = "default/svc-loja"
     }
 }
+# data "aws_elb" "tech_elb" {
+#       tags = {
+#         "kubernetes.io/service-name" = "default/svc-loja"
+#     }
+# }
 
-output elb_output {
-  # value = data.aws_subnets.tech_subnetes.ids
-  value = data.tech_elb
-}
+# output elb_output {
+#   # value = data.aws_subnets.tech_subnetes.ids
+#   value = data.tech_elb
+# }
 
 output lbs_output {
   # value = data.aws_subnets.tech_subnetes.ids
   value = data.tech_elb
+}
+
+output lb_output {
+  # value = data.aws_subnets.tech_subnetes.ids
+  value = data.tech_lb
 }
 
 resource "aws_api_gateway_vpc_link" "main" {

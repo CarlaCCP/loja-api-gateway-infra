@@ -1,10 +1,10 @@
-name: "Terraform"
+name: "Destroy"
 on:
   workflow_dispatch:
 
 jobs:
-  terraform:
-    name: "Terraform"
+  destroy:
+    name: "Destroy"
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write

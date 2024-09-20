@@ -1,35 +1,15 @@
-data "aws_lbs" "tech_lbs" {
-    tags = {
-        "kubernetes.io/service-name" = "default/svc-loja"
-    }
-}
-
 data "aws_lb" "tech_lb" {
     tags = {
         "kubernetes.io/service-name" = "default/svc-loja"
     }
 }
-# data "aws_elb" "tech_elb" {
-#       tags = {
-#         "kubernetes.io/service-name" = "default/svc-loja"
-#     }
-# }
 
-# output elb_output {
-#   # value = data.aws_subnets.tech_subnetes.ids
-#   value = data.tech_elb
-# }
-
-output lbs_output {
-  # value = data.aws_subnets.tech_subnetes.ids
-  value = data.aws_lbs.tech_lbs
+output lb_output_arn {
+  value = data.aws_lb.tech_lb.arn
 }
-
-output lb_output {
-  # value = data.aws_subnets.tech_subnetes.ids
-  value = data.aws_lb.tech_lb
+output lb_output_dns_name {
+  value = data.aws_lb.tech_lb.dns_name
 }
-
 # resource "aws_api_gateway_vpc_link" "main" {
 #   name        = "tech_vpclink_teste"
 #   description = "Foobar Gateway VPC Link. Managed by Terraform."

@@ -1,13 +1,21 @@
-data "aws_lbs" "tech_lbs" {
+data "aws_lb" "tech_lb" {
     tags = {
         "kubernetes.io/service-name" = "default/svc-loja"
     }
 }
 
+output lb_output_arn {
+  value = data.aws_lb.tech_lb.arn
+}
+
+output lb_output_dns_name {
+  value = data.aws_lb.tech_lb.dns_name
+}
+
 resource "aws_api_gateway_vpc_link" "main" {
   name        = "tech_vpclink_teste"
   description = "Foobar Gateway VPC Link. Managed by Terraform."
-  target_arns = data.aws_lbs.tech_lbs.arns
+  target_arns = [data.aws_lb.tech_lb.arn]
 }
 
 resource "aws_api_gateway_rest_api" "main" {
@@ -38,7 +46,7 @@ resource "aws_api_gateway_integration" "root" {
 
   integration_http_method = "ANY"
   type                    = "HTTP_PROXY"
-  uri                     = "http://a2e8081d793fc4d8abaeea9dc4112fb7-aacd053f04726e2f.elb.us-east-1.amazonaws.com/"
+  uri                     = "http://${data.aws_lb.tech_lb.dns_name}/"
   passthrough_behavior    = "WHEN_NO_MATCH"
   content_handling        = "CONVERT_TO_TEXT"
 
@@ -77,7 +85,7 @@ resource "aws_api_gateway_integration" "proxy" {
 
   integration_http_method = "ANY"
   type                    = "HTTP_PROXY"
-  uri                     = "http://a2e8081d793fc4d8abaeea9dc4112fb7-aacd053f04726e2f.elb.us-east-1.amazonaws.com/{proxy}"
+  uri                     = "http://${data.aws_lb.tech_lb.dns_name}/{proxy}"
   passthrough_behavior    = "WHEN_NO_MATCH"
   content_handling        = "CONVERT_TO_TEXT"
 

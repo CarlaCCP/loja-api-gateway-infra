@@ -1,9 +1,6 @@
 name: "Terraform"
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   terraform:
@@ -33,17 +30,17 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init  -reconfigure
+        run: terraform init -reconfigure
       
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
 
-      - name: Terraform Plan
+      - name: Terraform Plan destroy
         id: plan
         if: github.event_name == 'pull_request'
         run: | 
-          terraform plan -no-color -input=false \
+          terraform plan -destroy -no-color -input=false \
           -var="aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" \
           -var="aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
           -var="aws_session_token=${{ secrets.AWS_SESSION_TOKEN }}" \
@@ -79,14 +76,11 @@ jobs:
               body: output
             })
 
-      - name: Terraform Plan Status
-        if: steps.plan.outcome == 'failure'
-        run: exit 1
 
-      - name: Terraform Apply
+      - name: Terraform apply destroy
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          terraform apply -auto-approve -input=false \
+          terraform apply -destroy -auto-approve -input=false \
           -var="aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" \
           -var="aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
           -var="aws_session_token=${{ secrets.AWS_SESSION_TOKEN }}" \

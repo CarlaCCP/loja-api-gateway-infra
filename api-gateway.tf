@@ -4,6 +4,22 @@ data "aws_lbs" "tech_lbs" {
     }
 }
 
+data "aws_elb" "tech_elb" {
+      tags = {
+        "kubernetes.io/service-name" = "default/svc-loja"
+    }
+}
+
+output elb_output {
+  # value = data.aws_subnets.tech_subnetes.ids
+  value = data.tech_elb
+}
+
+output lbs_output {
+  # value = data.aws_subnets.tech_subnetes.ids
+  value = data.tech_elb
+}
+
 resource "aws_api_gateway_vpc_link" "main" {
   name        = "tech_vpclink_teste"
   description = "Foobar Gateway VPC Link. Managed by Terraform."

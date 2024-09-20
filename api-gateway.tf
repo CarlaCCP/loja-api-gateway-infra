@@ -15,7 +15,7 @@ output lb_output_dns_name {
 resource "aws_api_gateway_vpc_link" "main" {
   name        = "tech_vpclink_teste"
   description = "Foobar Gateway VPC Link. Managed by Terraform."
-  target_arns = data.aws_lb.tech_lb.arn
+  target_arns = [data.aws_lb.tech_lb.arn]
 }
 
 resource "aws_api_gateway_rest_api" "main" {

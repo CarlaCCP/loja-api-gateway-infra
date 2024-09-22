@@ -38,44 +38,13 @@ jobs:
 
       - name: Terraform Plan destroy
         id: plan
-        if: github.event_name == 'pull_request'
+        if: github.ref == 'refs/heads/main'
         run: | 
           terraform plan -destroy -no-color -input=false \
           -var="aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" \
           -var="aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
           -var="aws_session_token=${{ secrets.AWS_SESSION_TOKEN }}" \
-        continue-on-error: true
-
-      - name: Update Pull Request
-        uses: actions/github-script@v6
-        if: github.event_name == 'pull_request'
-        env:
-          PLAN: ${{ steps.plan.outputs.stdout }}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-
-            <details><summary>Show Plan</summary>
-
-            \`\`\`terraform\n
-            ${process.env.PLAN}
-            \`\`\`
-
-            </details>
-
-            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
-
+     
 
       - name: Terraform apply destroy
         if: github.ref == 'refs/heads/main'

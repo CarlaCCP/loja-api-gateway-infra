@@ -18,7 +18,7 @@ data "aws_lambda_function_url" "lambda_authorizer" {
 }
 
 output lambda_authorizer {
-  valeu = data.aws_lambda_function_url.lambda_authorizer
+  value = data.aws_lambda_function_url.lambda_authorizer
 }
 
 # resource "aws_api_gateway_vpc_link" "main" {

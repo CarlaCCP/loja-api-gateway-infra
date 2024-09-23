@@ -12,6 +12,15 @@ output lb_output_dns_name {
   value = data.aws_lb.tech_lb.dns_name
 }
 
+
+data "aws_lambda_function" "lambda_authorizer" {
+  function_name = "lambda_loja_authorizer"
+}
+
+output lambda_authorizer {
+  value = data.aws_lambda_function.lambda_authorizer
+}
+
 resource "aws_api_gateway_vpc_link" "main" {
   name        = "tech_vpclink_teste"
   description = "Foobar Gateway VPC Link. Managed by Terraform."
@@ -97,6 +106,13 @@ resource "aws_api_gateway_integration" "proxy" {
 
   connection_type = "VPC_LINK"
   connection_id   = aws_api_gateway_vpc_link.main.id
+}
+
+resource "aws_api_gateway_authorizer" "gateway_authorizer" {
+  name                   = "gateway_authorizer"
+  rest_api_id            = aws_api_gateway_rest_api.main.id
+  authorizer_uri         = data.aws_lambda_function.lambda_authorizer.invoke_arn
+  authorizer_credentials = data.aws_lambda_function.lambda_authorizer.role
 }
 
 resource "aws_api_gateway_stage" "stage_dev" {

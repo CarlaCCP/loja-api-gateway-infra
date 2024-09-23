@@ -13,7 +13,7 @@
 # }
 
 
-data "aws_lambda_function_url" "lambda_authorizer" {
+data "aws_lambda_function" "lambda_authorizer" {
   function_name = "lambda_loja_authorizer"
 }
 

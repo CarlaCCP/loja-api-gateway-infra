@@ -36,11 +36,19 @@ resource "aws_api_gateway_rest_api" "main" {
   }
 }
 
+resource "aws_api_gateway_authorizer" "gateway_authorizer" {
+  name                   = "gateway_authorizer"
+  rest_api_id            = aws_api_gateway_rest_api.main.id
+  authorizer_uri         = data.aws_lambda_function.lambda_authorizer.invoke_arn
+  authorizer_credentials = data.aws_lambda_function.lambda_authorizer.role
+}
+
 resource "aws_api_gateway_method" "root" {
   rest_api_id   = aws_api_gateway_rest_api.main.id
   resource_id   = aws_api_gateway_rest_api.main.root_resource_id
   http_method   = "ANY"
-  authorization = "NONE"
+  authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.gateway_authorizer.id
 
   request_parameters = {
     "method.request.path.proxy"           = true
@@ -79,7 +87,8 @@ resource "aws_api_gateway_method" "proxy" {
   rest_api_id   = aws_api_gateway_rest_api.main.id
   resource_id   = aws_api_gateway_resource.proxy.id
   http_method   = "ANY"
-  authorization = "NONE"
+  authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.gateway_authorizer.id
 
   request_parameters = {
     "method.request.path.proxy"           = true
@@ -108,12 +117,6 @@ resource "aws_api_gateway_integration" "proxy" {
   connection_id   = aws_api_gateway_vpc_link.main.id
 }
 
-resource "aws_api_gateway_authorizer" "gateway_authorizer" {
-  name                   = "gateway_authorizer"
-  rest_api_id            = aws_api_gateway_rest_api.main.id
-  authorizer_uri         = data.aws_lambda_function.lambda_authorizer.invoke_arn
-  authorizer_credentials = data.aws_lambda_function.lambda_authorizer.role
-}
 
 resource "aws_api_gateway_stage" "stage_dev" {
   deployment_id = aws_api_gateway_deployment.deployment.id

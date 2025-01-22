@@ -1,6 +1,6 @@
 data "aws_lb" "tech_lb" {
     tags = {
-        "kubernetes.io/service-name" = "default/svc-loja"
+        "kubernetes.io/service-name" = "default/svc-extractor"
     }
 }
 

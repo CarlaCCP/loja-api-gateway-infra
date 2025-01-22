@@ -28,7 +28,7 @@ resource "aws_api_gateway_vpc_link" "main" {
 }
 
 resource "aws_api_gateway_rest_api" "main" {
-  name           = "tech_gateway"
+  name           = "tech_gateway_teste"
   description    = "Foobar Gateway VPC Link. Managed by Terraform."
 
   endpoint_configuration {
@@ -122,6 +122,10 @@ resource "aws_api_gateway_stage" "stage_dev" {
   deployment_id = aws_api_gateway_deployment.deployment.id
   rest_api_id   = aws_api_gateway_rest_api.main.id
   stage_name    = "dev"
+  
+  variables = {
+    maximum_payload_size = 52428800  # Exemplo de 50 MB
+  }
 }
 
 resource "aws_api_gateway_deployment" "deployment" {

@@ -28,8 +28,9 @@ resource "aws_api_gateway_vpc_link" "main" {
 }
 
 resource "aws_api_gateway_rest_api" "main" {
-  name           = "tech_gateway"
-  description    = "Foobar Gateway VPC Link. Managed by Terraform."
+  name                    = "tech_gateway"
+  description             = "Foobar Gateway VPC Link. Managed by Terraform."
+  binary_media_types      = ["multipart/form-data"]
 
   endpoint_configuration {
     types = ["REGIONAL"]
@@ -53,6 +54,7 @@ resource "aws_api_gateway_method" "root" {
   request_parameters = {
     "method.request.path.proxy"           = true
     "method.request.header.Authorization" = true
+    "method.request.header.Content-Type"  = true
   }
 }
 
@@ -93,6 +95,7 @@ resource "aws_api_gateway_method" "proxy" {
   request_parameters = {
     "method.request.path.proxy"           = true
     "method.request.header.Authorization" = true
+    "method.request.header.Content-Type"  = true
   }
 }
 

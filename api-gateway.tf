@@ -95,6 +95,7 @@ resource "aws_api_gateway_method" "proxy" {
   request_parameters = {
     "method.request.path.proxy"           = true
     "method.request.header.Authorization" = true
+    "method.request.header.Content-Type"  = true
   }
 }
 
